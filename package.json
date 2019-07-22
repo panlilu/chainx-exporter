@@ -1,0 +1,16 @@
+{
+  "name": "chainx",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chainx.js": "^2.16.1",
+    "koa": "^2.7.0",
+    "koa-router": "^7.4.0"
+  }
+}
