@@ -11,6 +11,7 @@
   "dependencies": {
     "chainx.js": "^2.16.1",
     "koa": "^2.7.0",
+    "@polkadot/util": "^0.91.1",
     "koa-router": "^7.4.0"
   }
 }
