@@ -1,3 +1,4 @@
+const { hexToU8a }= require('@polkadot/util');
 const { ApiBase, HttpProvider } = require('chainx.js');
 const Koa = require('koa');
 const router = require('koa-router')();
@@ -13,16 +14,16 @@ const app = new Koa();
 
   const transferCallIndex = Buffer.from(api.tx.xAssets.transfer.callIndex).toString('hex');
 
-  async function getTransfers(blockNumber) {
-    const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
-    const block = await api.rpc.chain.getBlock(blockHash);
+  async function getTransfers(blockHash) {
+    rawBlockHash = hexToU8a(blockHash);
+    const block = await api.rpc.chain.getBlock(rawBlockHash);
     const estrinsics = block.block.extrinsics;
     const transfers = [];
 
     for (let i = 0; i < estrinsics.length; i++) {
       const e = estrinsics[i];
       if (Buffer.from(e.method.callIndex).toString('hex') === transferCallIndex) {
-        const allEvents = await api.query.system.events.at(blockHash);
+        const allEvents = await api.query.system.events.at(rawBlockHash);
         events = allEvents
           .filter(({ phase }) => phase.type === 'ApplyExtrinsic' && phase.value.eqn(i))
           .map(event => {
@@ -34,8 +35,7 @@ const app = new Koa();
 
         transfers.push({
           index: i,
-          blockHash: blockHash.toHex(),
-          blockNumber: blockNumber,
+          blockHash: blockHash,
           result,
           tx: {
             signature: e.signature.toJSON(),
@@ -55,7 +55,7 @@ const app = new Koa();
     ctx.body = t;
   }
 
-  router.get('/transfers/:id', transfers)
+  router.get('/transfer_events/:id', transfers)
   app.use(router.routes());
 
   app.listen(3001);
